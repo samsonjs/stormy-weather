@@ -1,0 +1,61 @@
+<div id="about-us">
+  <h2 class="section-heading top">About Us</h2>
+  <p class="section">
+    Made of 100% pure awesome. #winning
+  </p>
+</div>
+
+<div id="contact-us">
+  <h2 class="section-heading top">Contact Us</h2>
+
+  <%== flash_message %>
+
+  <form id="contact-form" class="section" action="/contact" method="post">
+    <p><label for="message">Message</label></p>
+    <textarea name="message" id="message" cols="40" rows="5" placeholder="Your message ..."></textarea>
+    <p><label for="email">Email</label></p>
+    <p><input type="email" name="email" id="email" size="40" placeholder="jane.doe@example.com"></p>
+    <p>
+      <input type="submit" value="Send Message">
+      <span id="contact-spinner"><img src="/images/spinner.gif"> Sending ...</span>
+    </p>
+  </form>
+</div>
+
+<div id="contact-email">
+  <h2 class="section-heading">Email</h2>
+
+  <p class="section">Contact us via email.</p>
+
+  <table class="section">
+    <tr>
+      <th>Technical support:</th>
+      <td><a href="mailto:tech@example.com">tech@example.com</a></td>
+    </tr>
+    <tr>
+      <th>Accounting support:</th>
+      <td><a href="mailto:accounts@example.com">accounts@example.com</a></td>
+    </tr>
+    <tr>
+      <th>General inquiries:</th>
+      <td><a href="mailto:info@example.com">info@example.com</a></td>
+    </tr>
+  </table>
+</div>
+
+<div id="address-phone">
+  <h2 class="section-heading">Address and Phone</h2>
+
+  <p class="section">Or keep it old school.</p>
+
+  <table class="section">
+    <tr>
+      <th>Phone:</th>
+      <td><a href="tel:+12501234567">+1 (250) 123-4567</a></td>
+    </tr>
+    <tr>
+      <th valign="top">Address:</th>
+      <td><a href="http://maps.google.ca/maps?q=1900+Store+St,+Victoria,+BC">1900 Store Street<br>Victoria, BC<br>V4G 1N4</a><br></td>
+    </tr>
+  </table>
+</div>

@@ -1,0 +1,65 @@
+<h2 class="section-heading top">Account</h2>
+
+<%== flash_message %>
+
+<table id="account">
+  <tr>
+    <th>First name</th>
+    <td><span id="first_name" class="editable"><%= @account.first_name %></span></td>
+    <td rowspan="4" class="edit-instructions">
+      &larr; click to edit
+    </td>
+  </tr>
+  <tr>
+    <th>Last name</th>
+    <td><span id="last_name" class="editable"><%= @account.last_name %></span></td>
+  </tr>
+  <tr>
+    <th>Email</th>
+    <td>
+      <span id="email" class="editable-json"><%= @account.email %></span>
+      <span id="email-verified" class="verified <%= @account.email_verified? ? '' : 'hidden' %>">&#10003; Verified</span>
+    </td>
+  </tr>
+  <tr>
+    <th>Phone</th>
+    <td>
+      <span id="phone" class="editable"><%= @account.phone %></span>
+    </td>
+  </tr>
+</table>
+
+<p class="indented"><a href="#" id="change-password-link">Change my password</a></p>
+
+<form action="/account/password" method="post" id="change-password-form">
+<table id="change-password">
+  <tr>
+    <th><label for="old-password">Current password</label></th>
+    <td><input type="password" id="old-password" name="old-password" placeholder="Current password"></td>
+  </tr>
+  <tr>
+    <th><label for="new-password">New password</label></th>
+    <td><input type="password" id="new-password" name="new-password" placeholder="Secret"></td>
+  </tr>
+  <tr>
+    <th><label for="password-confirmation">Confirm</label></th>
+    <td><input type="password" id="password-confirmation" name="password-confirmation" placeholder="Again"></td>
+  </tr>
+  <tr>
+    <th></th>
+    <td align="right">
+      <input type="submit" id="change-password-button" value="Change My Password">
+      <img class="spinner" src="/images/spinner.gif">
+    </td>
+  </tr>
+</table>
+</form>
+
+<p id="password-changed" class="indented">Password changed!</p>
+
+<div id="email-verification" class="indented <%= @account.email_verified? ? 'hidden' : '' %>">
+  <hr>
+  <p id="unverified-email" class="unverified">Your email address is unverified.</p>
+  <p><a href="#" id="send-email-verification">Send verification email</a></p>
+  <p id="sending-email-verification"><img src="/images/spinner.gif"> Sending...</p>
+</div>

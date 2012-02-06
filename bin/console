@@ -1,0 +1,16 @@
+#!/usr/bin/env ruby
+#
+# Bash version:
+#   exec irb --readline --simple-prompt -r irb/completion -I $(dirname "$0")/../lib -r stormy
+
+$LOAD_PATH << File.expand_path('../lib', File.dirname(__FILE__))
+require 'stormy'
+require 'stormy/models'
+
+include Stormy::Models
+
+require 'irb'
+require 'irb/completion'
+
+ARGV << '--simple-prompt'
+IRB.start

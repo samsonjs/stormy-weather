@@ -1,0 +1,22 @@
+<h2 class="section-heading top">Projects</h2>
+
+<%== flash_message %>
+
+<% if @projects.empty? %>
+  <!-- no projects -->
+<% else %>
+<table id="projects" class="section">
+  <tr class="headings">
+    <th class="name">Name</th>
+    <th class="created">Created</th>
+  </tr>
+  <% first_project = true %>
+  <% @projects.each do |project| %>
+  <tr class="project <%= project.name.blank? ? 'new' : '' %> <%= first_project ? 'first' : '' %>">
+    <td class="name"><a href="/project/<%= project.id %>"><%= project.name %></a></td>
+    <td class="created"><%= format_date(Time.at(project.created_timestamp)) %></td>
+  </tr>
+  <% first_project = false %>
+  <% end %>
+</table>
+<% end %>

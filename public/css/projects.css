@@ -1,0 +1,35 @@
+
+table#projects
+{ border-collapse: collapse
+; margin: 0 auto 2em
+}
+
+#projects td { padding: 0.3em 0 }
+#projects th { text-align: center }
+
+#projects tr.headings th
+{ color: #666
+; padding: 0.3em 0 0.8em
+}
+
+#projects th.name,
+#projects td.name
+{ text-align: left }
+
+#projects tr.project { background-color: #dce1e8 }
+#projects tr.project:nth-child(even) { background-color: #e4e8ed }
+#projects tr.project:hover { background-color: #eee }
+
+#projects tr.project td
+{ border-bottom: solid 1px #aaa
+; padding: 0.5em 0
+}
+
+#projects tr.project.first td { border-top: solid 1px #aaa }
+
+#projects td.created { text-align: center }
+
+#projects td.name a
+{ color: #333
+; font-size: 1.2em
+}

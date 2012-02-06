@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <title><%= @page_title %> - Stormy Weather Admin</title>
+  <link rel="stylesheet" href="/css/admin.css" charset="utf-8">
+
+  <% if @page_styles %>
+    <% for url in @page_styles %>
+    <link rel="stylesheet" href="<%= url %>" charset="utf-8">
+    <% end %>
+  <% end %>
+</head>
+
+<body>
+
+<h1><%= @page_title %></h1>
+
+<% if current_admin %>
+<div id="sign-out">
+  Signed in as <%= current_admin.name %>.
+  <a href="#" id="sign-out-link">Sign Out</a>
+  <br>
+  <a href="/admin/password">Change password</a>
+  <form id="sign-out-form" action="/admin/sign-out" method="post"></form>
+</div>
+
+<%== flash_message %>
+
+<ul id="nav">
+  <li><a href="/admin">Dashboard</a></li>
+  <li><a href="/admin/accounts">Accounts (<%= num_accounts %>)</a></li>
+  <li><a href="/admin/projects">Project IDs (<%= num_projects %>)</a></li>
+  <li><a href="/admin/faq">FAQ</a></li>
+  <li><a href="/admin/admins">Admin Accounts (<%= num_admins %>)</a></li>
+</ul>
+<% end %>
+
+<div id="content">
+  <%== yield %>
+</div>
+
+<% for url in scripts %>
+<script src="<%= url %>"></script>
+<% end %>
+
+</body>
+</html>

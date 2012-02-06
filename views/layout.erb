@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="Stormy Weather is bigger than The Beatles.">
+
+  <title><%= @page_title ? @page_title + ' - ' : '' %>Stormy Weather</title>
+
+  <% for url in stylesheets %>
+  <link rel="stylesheet" href="<%= url %>" charset="utf-8">
+  <% end %>
+
+</head>
+
+<body>
+
+<form id="sign-out-form" action="/sign-out" method="post"></form>
+
+<div id="wrapper">
+
+  <p id="nav" class="<%= authorized? ? 'authorized' : '' %>">
+    <% if authorized? %>
+    Signed in as <%= current_account.email %>
+    <br>
+    <a href="/projects">Projects</a>
+    |
+    <a href="/account">Account</a>
+    |
+    <a href="#" id="sign-out-link">Sign Out</a>
+    <% else %>
+    <a href="/">Home</a>
+    |
+    <a href="/sign-up">Sign Up</a>
+    |
+    <a href="/sign-in">Sign In</a>
+    <% end %>
+  </p>
+
+  <div id="header">
+  	<a id="logo" href="/"><img src="/images/logo.png" width="600" height="72" alt="Stormy Weather"></a>
+  </div>
+
+  <div id="content">
+    <%== yield %>
+  </div>
+
+  <div id="footer">
+    <p id="copyright">&copy; 2012 Sami Samhuri</p>
+    <p>
+      <a href="/contact">About Us</a>
+      &bull;
+      <a href="/faq">FAQ</a>
+      &bull;
+      <a href="/contact">Contact Us</a>
+      &bull;
+      <a href="/terms">Terms of Service</a>
+    </p>
+  </div>
+
+</div>
+
+<% for url in scripts %>
+<script src="<%= url %>"></script>
+<% end %>
+
+<script type="text/javascript">
+if (false) {
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-XXXXXXXX-X']);
+  _gaq.push(['_setDomainName', 'example.com']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,85 @@
+
+#blurb
+{ margin: 0
+; padding: 1em
+; font-weight: bold
+; font-size: 1.2em
+; color: #509ed4
+; text-align: left
+}
+
+#sign-up-table
+{ width: 55%
+; margin: auto 1em
+; padding: 1em
+; float: left
+}
+
+th
+{ text-align: right
+; vertical-align: top
+}
+
+td { text-align: left }
+
+label
+{ margin: 0 0.2em 0 0
+; font-weight: bold
+; font-size: 1em
+; color: #405e83
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"]
+{ padding: 0 0.2em
+; border: #CCD3DB 1px solid
+; font-size: 1em
+; height: 1.6em
+}
+
+label[for="terms"]
+{ font-size: 0.8em
+; color: #28313c
+}
+
+#terms-cell { padding: 0.5em 0 0.7em }
+#terms a { color: #28313c }
+
+#sign-up-cell { text-align: center }
+
+#sign-up-button
+{ border: solid 1px #444
+; border-radius: 3px
+; background-color: #ff9806
+; font-size: 1.3em
+; padding: 0.2em 0.4em
+; font-weight: bold
+; cursor: pointer
+; color: #000
+}
+
+#sign-up-button:hover
+{ background-color: #FFD395
+; border-color: #000
+}
+
+#sign-up-spinner { display: none }
+
+#sign-in
+{ width: 40%
+; min-width: 150px
+; max-width: 400px
+; text-align: center
+; float: right
+}
+
+#sign-in p
+{ margin-top: 5em
+; font-weight: bold
+; color: #405e83
+}
+
+#sign-in a { text-decoration: none }
+
+#sign-in-spinner { display: none }

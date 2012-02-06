@@ -1,0 +1,53 @@
+table#account
+{ width: 70%
+; margin: auto
+; border-spacing: 0 0.7em
+}
+
+th
+{ text-align: right
+; padding-right: 1em
+; vertical-align: top
+}
+
+th, td { color: #405e83 }
+
+hr
+{ width: 70%
+; margin: 2em auto
+}
+
+#taken, #invalid
+{ font-weight: bold
+; color: #600
+; text-align: center
+; padding: 0.3em 0.5em
+}
+
+div.indented p,
+div.indented form,
+p.indented
+{ margin-left: 10em }
+
+#content a { color: #405e83 }
+
+.verified { color: #4db269; float: right }
+.unverified { color: #aa0000 }
+
+#sending-email-verification
+{ display: none }
+
+table#change-password
+{ display: none
+; margin-left: 10em
+}
+
+.spinner
+{ display: none
+; margin: 0 0.5em
+}
+
+#password-changed
+{ display: none
+; margin-left: 10em
+}

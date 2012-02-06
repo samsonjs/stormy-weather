@@ -1,0 +1,8 @@
+*.tmproj
+log/
+pid
+public/photos/*
+public/videos/*
+public/js-min
+public/css-min
+coverage

@@ -1,0 +1,12 @@
+{ "sami": {
+    "name"                : "Sami"
+  , "email"               : "sami@example.com"
+  , "password"            : "super secret"
+  }
+
+, "freddy": {
+    "name"                : "Freddy"
+  , "email"               : "freddy@example.com"
+  , "password"            : "even more secreter"
+  }
+}

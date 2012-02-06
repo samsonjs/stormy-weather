@@ -1,0 +1,16 @@
+{ "sami": {
+    "first_name"          : "Sami"
+  , "last_name"           : "Samhuri"
+  , "email"               : "sami@example.com"
+  , "phone"               : "250-216-6216"
+  , "password"            : "super secret"
+  }
+
+, "freddy": {
+    "first_name"          : "Freddy"
+  , "last_name"           : "Kruger"
+  , "email"               : "freddy@example.com"
+  , "phone"               : "(250) 555-9999"
+  , "password"            : "even more secreter"
+  }
+}

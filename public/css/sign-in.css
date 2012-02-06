@@ -1,0 +1,55 @@
+
+#content
+{ background-color: #fff
+; padding-bottom: 0
+}
+
+#sign-in
+{ padding: 1em
+; background-color: #E4E8ED
+; margin: auto
+}
+
+th
+{ text-align: right
+; vertical-align: top
+; padding-top: 0.6em
+; padding-right: 0.4em
+}
+
+label { line-height: 1.7em }
+
+input[type="text"], /* fake password placeholder element created by jquery.placeholder */
+input[type="email"],
+input[type="password"]
+{ margin: 0.3em 0 0 }
+
+#password-cell { text-align: right }
+
+#forgot-password-link
+{ font-size: 0.8em
+; padding-right: 0.5em
+; margin-top: 0.5em
+; display: inline-block
+; color: #405e83
+}
+
+#forgot-password-link:hover { color: #000 }
+
+label[for="remember"]
+{ font-size: 0.9em
+; font-weight: normal
+}
+
+#submit-cell
+{ text-align: right
+; color: #405e83
+}
+
+#sign-in-spinner { display: none }
+
+#sign-up
+{ text-align: center
+; padding-top: 1em
+; color: #405e83
+}

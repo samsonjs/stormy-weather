@@ -1,0 +1,78 @@
+body
+{ font-size: 1.2em
+; font-family: 'Helvetica Neue', Roboto, Helvetica, Verdana, sans-serif
+}
+
+h1 { float: left }
+
+#sign-in
+{ text-align: center
+; width: 50%
+; margin: auto
+; padding: 1em
+; background-color: #d0d0d0
+; clear: both
+}
+
+#sign-out
+{ float: right
+; font-size: 1.0em
+}
+
+#content
+{ float: right
+; text-align: left
+; width: 70%
+; margin-right: 2em
+; padding-left: 2em
+; border-left: solid 2px #ddd
+}
+
+#nav
+{ width: 200px
+; list-style-type: none
+; float: none !important
+}
+
+#nav li a { text-decoration: underline }
+
+.section { border-bottom: solid 1px #ddd }
+.section:last-child { border-bottom: none }
+
+.subtle
+{ color: #bbb
+; margin-left: 20em
+}
+
+#flash
+{ border: solid 1px #bbb
+; font-weight: bold
+; border: solid 1px #bbb
+; font-weight: bold
+; padding: 0.7em 0.4em
+; margin: 1em auto
+; width: 70%
+; font-size: 1.2em
+; text-align: center
+; clear: left
+; border-radius: 5px
+}
+
+.notice { background-color: #d3edc5 }
+.warning { background-color: #ffc }
+#flash.error { background-color: #fcc }
+
+
+/* Accounts */
+
+#accounts { border-collapse: collapse }
+#accounts th { background-color: #def }
+#accounts tr:nth-child(even) { background-color: #eee }
+
+#accounts td,
+#accounts th
+{ text-align: center
+; padding: 0.2em 0.3em
+}
+
+td.name { text-align: left }

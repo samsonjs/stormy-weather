@@ -1,0 +1,51 @@
+
+#content
+{ padding: 0
+; background-color: #fff
+; line-height: 1.2em
+}
+
+#about-us,
+#contact-us,
+#contact-email,
+#address-phone
+{ width: 50%
+; min-height: 400px
+; float: left
+; margin-bottom: 0
+}
+
+#contact-email,
+#address-phone
+{ min-height: 300px }
+
+#about-us, #contact-email { background-color: #e4e8ed }
+#contact-us, #address-phone { background-color: #e0e4e8 }
+
+.section
+{ color: #405e83
+; font-size: 0.9em
+; width: 90%
+; margin-top: 1em
+}
+
+table.section { margin-top: 0 }
+
+#contact-us p.section
+{ margin: 0
+; padding: 0
+; text-align: center
+; font-size: 1em
+}
+
+#contact-spinner { display: none }
+
+table.section { padding-top: 1em }
+
+th
+{ text-align: right
+; padding-right: 0.6em
+}
+
+td a { color: #405e83 }
+td a:hover { color: #000 }

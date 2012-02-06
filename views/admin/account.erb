@@ -1,0 +1,45 @@
+<script>
+window.SI = window.SI || {}
+window.SI.email = "<%= @account.email %>"
+</script>
+
+<p><a href="/admin/accounts">&lt;&lt; Accounts</a></p>
+
+<form action="/admin/account/<%= @account.email %>" method="post">
+<table>
+  <tr>
+    <th>Email</th>
+    <td>
+      <input type="email" name="new_email" size="30" value="<%= @account.email %>">
+      <%= @account.email_verified ? "(verified)" : "(not verified)" %>
+    </td>
+  </tr>
+  <tr>
+    <th>First name</th>
+    <td><input type="text" name="first_name" size="30" value="<%= @account.first_name %>"></td>
+  </tr>
+  <tr>
+    <th>Last name</th>
+    <td><input type="text" name="last_name" size="30" value="<%= @account.last_name %>"></td>
+  </tr>
+  <tr>
+    <th>Phone</th>
+    <td><input type="text" name="phone" size="30" value="<%= @account.phone %>"></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center">
+      <input type="submit" value="Update">
+    </td>
+  </tr>
+</table>
+</form>
+
+<p align="center">
+  <a target="_blank" href="/admin/sign-in-as/<%= @account.email %>">sign in as <%= @account.email %></a>
+
+  <br>
+  <br>
+  <a href="/admin/account/<%= @account.email %>/delete" id="delete" style="color: red">Delete this account</a>
+  <br>
+  <br>
+</p>

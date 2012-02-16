@@ -38,7 +38,7 @@ class ConfigTest < Stormy::Test::Case
 
   def test_method_missing_get
     # (none yet)
-    # assert_equal defaults['demo_project_id'], @config.demo_project_id
+    # assert_equal defaults['foo_bar'], @config.foo_bar
   end
 
   def test_method_missing_get_default

@@ -25,7 +25,6 @@ module Stormy
       end
 
       def send_verification_mail(account = current_account, subject = nil)
-        account.create_email_verification_token
         body = erb(:'email/email-verification', :layout => :'email/layout', :locals => {
           :name  => account.first_name,
           :email => account.email,

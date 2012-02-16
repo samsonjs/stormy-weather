@@ -203,4 +203,11 @@ class ViewsHelperTest < Stormy::Test::HelperCase
     assert_equal "<p>42</p>\n", markdown(42)
   end
 
+  def test_admin_page?
+    assert admin_page?('/admin')
+    assert admin_page?('/admin/accounts')
+    assert !admin_page?('/')
+    assert !admin_page?('/account')
+  end
+
 end

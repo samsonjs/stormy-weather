@@ -4,7 +4,6 @@
     <th>Name</th>
     <th>Email</th>
     <th>Phone</th>
-    <th>Projects</th>
   </tr>
 
   <% for account in @accounts %>
@@ -12,7 +11,6 @@
     <td class="name"><a href="/admin/account/<%= account.email %>"><%= account.name %></a></td>
     <td><%= account.email %></td>
     <td><%= account.phone %></td>
-    <td><%= account.count_projects %></td>
   </tr>
   <% end %>
 </table>

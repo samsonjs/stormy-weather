@@ -1,5 +1,6 @@
 # Copyright 2012 Sami Samhuri <sami@samhuri.net>
 
+require 'json'
 require 'stormy/config'
 
 module Stormy

@@ -15,11 +15,18 @@ module Stormy
         end
       end
 
+      class DuplicateFieldError < RuntimeError
+        attr_reader :field
+        def initialize(field = nil)
+          @field = field
+        end
+      end
+
       def self.clean_number(number)
         number.gsub(/[^\d]/, '').sub(/^1/, '')
       end
 
-      # Allows any 10 digit number in North America, or an empty field (for account creation).
+      # Allows any 10 digit number in North America, or an empty field
       PhoneNumberValidator = proc do |number|
         if number.present?
           clean_number(number).length == 10
@@ -48,7 +55,7 @@ module Stormy
 
 
       # Define or retrieve the name of this model.
-      def self.name(name = nil)
+      def self.model_name(name = nil)
         if name
           @model_name = name
         end
@@ -61,20 +68,33 @@ module Stormy
         @fields ||= {}
       end
 
+      def self.inherit_from(parent)
+        fields.merge!(parent.fields)
+        parent.belongs_to_relationships.each do |key, value|
+          belongs_to_relationships[key] = value.dup
+        end
+        parent.has_many_relationships.each do |key, value|
+          has_many_relationships[key] = value.dup
+        end
+      end
 
       # Define fields like so:
       #
       #   field :id,        :type => :integer, :required => true
-      #   field :name,      :required => true, :updatable => true
+      #   field :name,      :required => true, :updatable => true, :indexed => true
+      #   field :email,     :required => true, :updatable => true, :unique => true
       #   field :verified?
       #
       # Defaults: {
       #   :type => :string,
       #   :required => false,
       #   :updatable => false,
+      #   :accessors => true,
       #   :validator => nil,     # with some exceptions
       #   :default => {},
-      #   :nullify_if_blank => false
+      #   :nullify_if_blank => false,
+      #   :indexed => false,
+      #   :unique => false
       # }
       #
       # Types: :string, :integer, :boolean, :json, as well as
@@ -91,11 +111,25 @@ module Stormy
       # JSON fields accept a :default option used to initialize
       # a JSON field, and also when a parse fails.
       #
-      # Attribute accessors are defined for each field and boolean
-      # fields get a predicate method as well, e.g. verified?
+      # Unless :accessors is false, attribute accessors are
+      # defined for each field. Boolean fields get a predicate
+      # method as well, e.g. verified?
       #
       # Changed fields are tracked and only changed fields are
       # persisted on a `save`.
+      #
+      # If the :indexed option is truthy an index on that field
+      # will be created and maintained and there will be a class
+      # method to fetch objects by that field.
+      #
+      #   e.g. fetch_by_name(name)
+      #
+      # If the :unique option is truthy then values for that field
+      # must be unique across all instances. This implies :indexed
+      # and adds a method to see if a value is taken, to the class
+      # and to instances.
+      #
+      #   e.g. email_taken?(email)
       #
       def self.field(name, options = {})
         if name.to_s.ends_with?('?')
@@ -106,79 +140,182 @@ module Stormy
         name = name.to_sym
         options[:type] ||= :string
 
+        unless options.has_key?(:accessors)
+          options[:accessors] = true
+        end
+
+        if options[:unique]
+          options[:indexed] = true
+        end
+
         case options[:type]
         when :email
-          options[:validator] ||= EmailAddressValidator
+          options[:validator] = EmailAddressValidator unless options.has_key?(:validator)
           options[:type] = :string
         when :phone
-          options[:validator] ||= PhoneNumberValidator
+          options[:validator] = PhoneNumberValidator unless options.has_key?(:validator)
           options[:type] = :string
         when :json
-          options[:default] ||= {}
+          options[:default] = {} unless options.has_key?(:default)
         end
 
         fields[name] = options
-        define_method(name) do
-          instance_variable_get("@#{name}")
-        end
 
-        case options[:type]
-        when :string
-          define_method("#{name}=") do |value|
-            s =
-              if options[:nullify_if_blank] && value.blank?
-                nil
-              else
-                value.to_s.strip
-              end
-            instance_variable_set("@#{name}", s)
-            changed_fields[name] = s
-          end
-
-        when :integer
-          define_method("#{name}=") do |value|
-            i = value.to_i
-            instance_variable_set("@#{name}", i)
-            changed_fields[name] = i
-          end
-
-        when :boolean
-          define_method("#{name}=") do |value|
-            b = value == 'true' || value == true
-            instance_variable_set("@#{name}", b)
-            changed_fields[name] = b
-          end
-          define_method("#{name}?") do
+        if options[:accessors]
+          define_method(name) do
             instance_variable_get("@#{name}")
           end
 
-        when :json
-          define_method(name) do
-            unless value = instance_variable_get("@#{name}")
-              value = options[:default].dup
-              send("#{name}=", value)
-            end
-            value
-          end
-          define_method("#{name}=") do |value|
-            obj =
-              if value.is_a?(String)
-                if value.length > 0
-                  JSON.parse(value)
+          case options[:type]
+          when :string
+            define_method("#{name}=") do |value|
+              s =
+                if options[:nullify_if_blank] && value.blank?
+                  nil
                 else
-                  options[:default].dup
+                  value.to_s.strip
                 end
-              else
-                value
+              instance_variable_set("@#{name}", s)
+              changed_fields[name] = s
+            end
+
+          when :integer
+            define_method("#{name}=") do |value|
+              i = value.to_i
+              instance_variable_set("@#{name}", i)
+              changed_fields[name] = i
+            end
+
+          when :boolean
+            define_method("#{name}=") do |value|
+              b = value == 'true' || value == true
+              instance_variable_set("@#{name}", b)
+              changed_fields[name] = b
+            end
+            define_method("#{name}?") do
+              instance_variable_get("@#{name}")
+            end
+
+          when :json
+            define_method(name) do
+              unless value = instance_variable_get("@#{name}")
+                value = options[:default].dup
+                send("#{name}=", value)
               end
-            instance_variable_set("@#{name}", obj)
-            changed_fields[name] = obj
+              value
+            end
+            define_method("#{name}=") do |value|
+              obj =
+                if value.is_a?(String)
+                  if value.length > 0
+                    JSON.parse(value)
+                  else
+                    options[:default].dup
+                  end
+                else
+                  value
+                end
+              instance_variable_set("@#{name}", obj)
+              changed_fields[name] = obj
+            end
+
+          else
+            define_method("#{name}=") do |value|
+              instance_variable_set("@#{name}", value)
+              changed_fields[name] = value
+            end
+          end
+        end # if options[:accessors]
+
+        if options[:indexed]
+          index_key_method_name = "#{name}_index_key"
+          define_class_method(index_key_method_name) do
+            Stormy.key("index:#{model_name}-#{name}")
+          end
+          define_class_method("fetch_by_#{name}") do |value|
+            if id = send("id_from_#{name}", value)
+              fetch(id)
+            end
           end
 
-        else
-          define_method("#{name}=") do |value|
-            instance_variable_set("@#{name}", value)
-            changed_fields[name] = value
+          define_class_method("id_from_#{name}") do |value|
+            redis.hget(send(index_key_method_name), value.to_s.strip.downcase)
+          end
+        end
+
+        if options[:unique]
+          define_class_method("#{name}_taken?") do |value|
+            !! send("id_from_#{name}", value)
+          end
+
+          define_method("#{name}_taken?") do |value|
+            self.class.send("#{name}_taken?", value)
+          end
+        end
+      end
+
+
+      #####################
+      ### Relationships ###
+      #####################
+
+      def self.has_many_relationships
+        @has_many_relationships ||= {}
+      end
+
+      def self.has_many(things, options = {})
+        thing = things.to_s.singularize
+        options[:class_name] ||= thing.capitalize
+
+        has_many_relationships[thing] = options
+
+        define_method("#{thing}_ids_key") do
+          ivar_name = "@#{thing}_ids_key"
+          unless ids_key = instance_variable_get(ivar_name)
+            ids_key = "#{key}:#{thing}-ids"
+            instance_variable_set(ivar_name, ids_key)
+          end
+          ids_key
+        end
+        private "#{thing}_ids_key"
+
+        define_method("count_#{things}") do
+          redis.scard(send("#{thing}_ids_key"))
+        end
+
+        define_method("#{thing}_ids") do
+          redis.smembers(send("#{thing}_ids_key"))
+        end
+
+        define_method(things) do
+          klass = Stormy::Models.const_get(options[:class_name])
+          send("#{thing}_ids").map { |id| klass.fetch(id) }
+        end
+
+        define_method("add_#{thing}_id") do |id|
+          redis.sadd(send("#{thing}_ids_key"), id)
+        end
+
+        define_method("remove_#{thing}_id") do |id|
+          redis.srem(send("#{thing}_ids_key"), id)
+        end
+      end
+
+      def self.belongs_to_relationships
+        @belongs_to_relationships ||= {}
+      end
+
+      def self.belongs_to(thing, options = {})
+        options[:class_name] ||= thing.to_s.capitalize
+
+        field "#{thing}_id".to_sym, :required => options[:required]
+
+        belongs_to_relationships[thing] = options
+
+        define_method(thing) do
+          klass = Stormy::Models.const_get(options[:class_name])
+          if thing_id = send("#{thing}_id")
+            instance_variable_set("@#{thing}", klass.fetch(thing_id))
           end
         end
       end
@@ -246,14 +383,46 @@ module Stormy
       end
 
       def create
+        # check for unqiue fields
+        self.class.fields.each do |name, options|
+          if options[:unique] && send("#{name}_taken?", send(name))
+            raise DuplicateFieldError.new(name => send(name))
+          end
+        end
+
+        if has_field?(:id) && field_required?(:id)
+          self.id = UUID.generate unless id.present?
+        end
+
+        if has_field?(:created_timestamp)
+          self.created_timestamp = Time.now.to_i
+        end
+
         # raises if invalid
         save
-        add_to_index
+
+        add_to_indexes
+
+        self.class.belongs_to_relationships.each do |thing, options|
+          if obj = send(thing)
+            obj.send("add_#{self.class.model_name}_id", id)
+          end
+        end
+
         self
       end
 
       def delete!
-        if redis.srem(self.class.model_ids_key, id)
+        self.class.has_many_relationships.each do |thing, options|
+          klass = Stormy::Models.const_get(options[:class_name])
+          send("#{thing}_ids").each { |id| klass.delete!(id) }
+        end
+        if remove_from_indexes
+          self.class.belongs_to_relationships.each do |thing, options|
+            if obj = send(thing)
+              obj.send("remove_#{self.class.model_name}_id", id)
+            end
+          end
           redis.del(key)
         end
       end
@@ -280,6 +449,12 @@ module Stormy
         options[:validate] = true unless options.has_key?(:validate)
         fields.each do |name, value|
           if options[:all] || field_updatable?(name)
+
+            # ensure uniqueness
+            if options[:unique] && send("#{name}_taken?", value)
+              raise DuplicateFieldError.new(name => value)
+            end
+            
             send("#{name}=", value)
           end
         end
@@ -296,6 +471,10 @@ module Stormy
       end
 
       def save!
+        if has_field?(:updated_timestamp)
+          self.updated_timestamp = Time.now.to_i
+        end
+
         # always update JSON fields because they can be updated without our knowledge
         field_names.each do |name|
           if field_type(name) == :json
@@ -317,6 +496,7 @@ module Stormy
       end
 
       def validate
+        # check for invalid fields
         invalid_fields = field_names.inject({}) do |fields, name|
           if field_validates?(name)
             result = validate_field(name, send(name))
@@ -329,6 +509,10 @@ module Stormy
         end
       end
 
+      def fields
+        Hash[field_names.zip(field_names.map { |name| send(name) })]
+      end
+
 
       private
 
@@ -336,8 +520,39 @@ module Stormy
         @key ||= self.class.key(self.id)
       end
 
-      def add_to_index
-        redis.sadd(self.class.model_ids_key, self.id)
+      def model_name
+        @model_name ||= self.class.model_name
+      end
+
+      def add_to_indexes
+        if redis.sadd(self.class.model_ids_key, id)
+          self.class.fields.each do |name, options|
+            add_to_field_index(name) if options[:indexed]
+          end
+        end
+      end
+
+      def add_to_field_index(name)
+        index_key = self.class.send("#{name}_index_key")
+        redis.hset(index_key, send(name).to_s.strip.downcase, id)
+      end
+
+      def remove_from_indexes
+        if redis.srem(self.class.model_ids_key, id)
+          success = true
+          self.class.fields.each do |name, options|
+            if options[:indexed]
+              success = success && remove_from_field_index(name)
+            end
+            break unless success
+          end
+          success
+        end
+      end
+
+      def remove_from_field_index(name)
+        index_key = self.class.send("#{name}_index_key")
+        redis.hdel(index_key, send(name).to_s.strip.downcase)
       end
 
       def changed_fields
@@ -346,6 +561,10 @@ module Stormy
 
       def clean_number(number)
         self.class.clean_number(number)
+      end
+
+      def has_field?(name)
+        self.class.fields.has_key?(name.to_sym)
       end
 
       def field_names
@@ -358,6 +577,10 @@ module Stormy
 
       def field_updatable?(name)
         self.class.fields[name.to_sym][:updatable]
+      end
+
+      def field_required?(name)
+        self.class.fields[name.to_sym][:required]
       end
 
       def validate_field(name, value)

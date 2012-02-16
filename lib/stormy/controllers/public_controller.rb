@@ -7,8 +7,6 @@ module Stormy
     get '/' do
       cache_control :public, :must_revalidate, :max_age => 60
       stylesheet 'index'
-      stylesheet 'jquery.lightbox-0.5'
-      script 'jquery.lightbox-0.5'
       script 'index'
       erb :index
     end

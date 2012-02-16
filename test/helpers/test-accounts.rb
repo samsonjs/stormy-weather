@@ -8,7 +8,6 @@ class AccountsHelperTest < Stormy::Test::HelperCase
 
   include Stormy::Helpers::Accounts
   include Stormy::Test::Helpers::Accounts
-  include Stormy::Test::Helpers::Projects
 
   def setup
     setup_accounts

@@ -7,14 +7,10 @@ require 'sinatra/cookie_thief'
 require 'sinatra/flash'
 
 require 'erubis'
-require 'json'
 require 'pony'
 require 'redis'
 require 'redis-store'
 require 'uuid'
-
-# Ruby extensions
-require 'hash-ext'
 
 require 'stormy/models'
 require 'stormy/controllers'
@@ -74,8 +70,6 @@ module Stormy
       if production?
         body = erb(:'email/error-notification', :layout => false, :locals => {
           :account  => current_account,
-          :project => current_project,
-          :admin    => current_admin,
           :error    => env['sinatra.error']
         })
         Pony.mail({

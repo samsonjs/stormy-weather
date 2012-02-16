@@ -1,5 +1,3 @@
-<p id="blurb">Please provide the following information in order to sign up.</p>
-
 <% if @errors %>
 <script>
 window.SI = window.SI || {}
@@ -9,49 +7,41 @@ window.SI.errors = <%== JSON.fast_generate(@errors) %>
 
 <%== flash_message %>
 
-<form id="sign-up-form" action="/sign-up" method="post">
-<table id="sign-up-table">
-  <tr>
-    <th><label for="first_name">First name</label></th>
-    <td><input type="text" id="first_name" name="first_name" size="40" placeholder="Jane" value="<%= @fields['first_name'] %>"></td>
-  </tr>
-  <tr>
-    <th><label for="last_name">Last name</label></th>
-    <td><input type="text" id="last_name" name="last_name" size="40" placeholder="Doe" value="<%= @fields['last_name'] %>"></td>
-  </tr>
-  <tr>
-    <th><label for="email">Email</label></th>
-    <td><input type="email" id="email" name="email" size="40" placeholder="jane.doe@example.com" value="<%= @fields['email'] %>"></td>
-  </tr>
-  <tr>
-    <th><label for="password">Password</label></th>
-    <td><input type="password" id="password" name="password" size="40" placeholder="Secret" value="<%= @fields['password'] %>"></td>
-  </tr>
-  <tr>
-    <th><label for="password_confirmation">Confirm password</label></th>
-    <td><input type="password" id="password_confirmation" name="password_confirmation" size="40" placeholder="Again" value="<%= @fields['password'] %>"></td>
-  </tr>
-  <tr>
-    <th></th>
-    <td id="terms-cell">
-      <input type="checkbox" id="terms" name="terms" <%= @fields['terms'] ? 'checked' : '' %>>
-      <label for="terms">Agree to the <a href="/terms">terms of service</a>.</label>
-    </td>
-  </tr>
-  <tr>
-    <th></th>
-    <td id="sign-up-cell">
-      <input id="sign-up-button" type="submit" value="SIGN UP">
-      <span id="sign-up-spinner"><img src="/images/spinner.gif"> Signing up...</span>
-    </td>
-  </tr>
-</table>
-</form>
+<div class="container">
+  <div class="content">
+    <div class="row">
+      <div class="sign-up-form">
+        <h2>Sign up</h2>
 
-<div id="sign-in">
-  <p>Already have an account?</p>
-  <a href="/sign-in" id="sign-in-button"><button>Sign In</button></a>
-  <img src="/images/spinner.gif" id="sign-in-spinner">
-</div>
+        <form id="sign-up-form" action="/sign-up" method="post">
+          <fieldset>
+            <div class="clearfix">
+              <input type="text" id="first_name" name="first_name" size="40" placeholder="First name" value="<%= @fields['first_name'] %>">
+            </div>
+            <div class="clearfix">
+              <input type="text" id="last_name" name="last_name" size="40" placeholder="Last name" value="<%= @fields['last_name'] %>">
+            </div>
+            <div class="clearfix">
+              <input type="email" id="email" name="email" size="40" placeholder="Email" value="<%= @fields['email'] %>">
+            </div>
+            <div class="clearfix">
+              <input type="password" id="password" name="password" size="40" placeholder="Password" value="<%= @fields['password'] %>">
+            </div>
+            <div class="clearfix">
+              <input type="password" id="password_confirmation" name="password_confirmation" size="40" placeholder="Confirm password" value="<%= @fields['password'] %>">
+            </div>
+            <div class="clearfix">
+              <input type="checkbox" id="terms" name="terms" <%= @fields['terms'] ? 'checked' : '' %>>
+              <label for="terms">Agree to the <a href="/terms">terms of service</a>.</label>
+            </div>
+            <div class="clearfix submit">
+              <input id="sign-up-button" type="submit" class="btn-primary" value="Sign up">
+              <span id="sign-up-spinner"><img src="/images/spinner.gif"> Signing up...</span>
+            </div>
+          </fieldset>
+        </form>
 
-<div class="clear"></div>
+      </div><!-- sign-up-form -->
+    </div><!-- row -->
+  </div><!-- content -->
+</div><!-- container -->

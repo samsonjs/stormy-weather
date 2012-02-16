@@ -1,43 +1,40 @@
 <%== flash_message %>
 
-<form id="sign-in-form" action="/sign-in" method="post">
-<table id="sign-in">
+<div class="container">
+  <div class="content">
+    <div class="row">
+      <div class="sign-in-form">
+        <h2>Sign in</h2>
 
-  <tr>
-    <th><label for="email">Email</label></th>
-    <td><input type="email" name="email" id="email" size="30" placeholder="jane.doe@example.com" value="<%= @email %>"></td>
-  </tr>
+        <form id="sign-in-form" action="/sign-in" method="post">
+          <fieldset>
+            <div class="clearfix">
+              <input type="email" name="email" id="email" size="30" placeholder="Email" value="<%= @email %>">
+            </div>
+            <div class="clearfix">
+              <input type="password" name="password" id="password" size="30" placeholder="Password">
+            </div>
+            <div class="clearfix">
+              <input type="checkbox" name="remember" id="remember">
+              <label for="remember">Keep me signed in</label>
+            </div>
+            <div class="clearfix submit">
+              <button id="sign-in-button" class="btn-primary" type="submit">Sign in</button>
+              <span id="sign-in-spinner"><img src="/images/spinner.gif"> Signing in...</span>
+            </div>
+          </fieldset>
+        </form>
 
-  <tr>
-    <th><label for="password">Password</label></th>
-    <td id="password-cell">
-      <input type="password" name="password" id="password" size="30" placeholder="Secret">
-    </td>
-  </tr>
+      </div><!-- sign-in-form -->
+    </div><!-- row -->
+  </div> <!-- content -->
 
-  <tr>
-    <th></th>
-    <td>
-      <input type="checkbox" name="remember" id="remember">
-      <label for="remember">Keep me signed in</label>
-    </td>
-  </tr>
-
-  <tr>
-    <th></th>
-    <td id="submit-cell">
-      <input id="sign-in-button" type="submit" value="Sign In">
-      <span id="sign-in-spinner"><img src="/images/spinner.gif"> Signing in...</span>
-    </td>
-  </tr>
-
-  <tr>
-    <td colspan="2" id="sign-up">
-      <a href="/forgot-password" id="forgot-password-link">Forgot your password?</a>
-      <br>
+  <div class="row other-actions">
+    <p style="float:right">
       Not a member yet? <a href="/sign-up">Sign Up!</a>
-    </td>
-  </tr>
-
-</table>
-</form>
+    </p>
+    <p>
+      <a href="/forgot-password" id="forgot-password-link">Forgot your password?</a>
+    </p>
+  </div><!-- row -->
+</div><!-- container -->

@@ -8,19 +8,9 @@
 
 <p><strong>session:</strong> <%= session.inspect %></p>
 
-<% if admin %>
-<p><strong>Admin:</strong> <%= admin.name %> &lt;<%= admin.email %>&gt;</p>
-<pre><%= admin.field_array %></pre>
-<% end %>
-
 <% if account %>
 <p><strong>Account:</strong> <%= account.name %> &lt;<%= account.email %>&gt;</p>
 <pre><%= account.field_array %></pre>
-<% end %>
-
-<% if project %>
-<p><strong>Project:</strong> <%= project.id %> (<%= project.name %>)</p>
-<pre><%= project.field_array %></pre>
 <% end %>
 
 <pre>

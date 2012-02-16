@@ -4,7 +4,7 @@ module Stormy
   class Server < Sinatra::Base
 
     get '/sign-up' do
-      redirect '/projects' if authorized? && production?
+      redirect '/account' if authorized? && production?
 
       title 'Sign Up'
       stylesheet 'sign-up'
@@ -26,9 +26,9 @@ module Stormy
         @account = Account.create(fields)
         authorize_account(@account.id)
         send_verification_mail(@account, 'Welcome to Stormy Weather!')
-        redirect '/projects'
+        redirect '/account'
 
-      rescue Account::EmailTakenError => e
+      rescue Account::DuplicateFieldError => e
         flash[:warning] = "That email address is already taken."
         session[:fields] = fields
         session[:fields]['terms'] = params['terms']
@@ -48,7 +48,7 @@ module Stormy
     end
 
     get '/sign-in' do
-      redirect '/projects' if authorized? && production?
+      redirect '/account' if authorized? && production?
 
       title 'Sign In'
       stylesheet 'sign-in'
@@ -70,7 +70,7 @@ module Stormy
         else
           response.delete_cookie('remembered')
         end
-        url = session.delete(:original_url) || '/projects'
+        url = session.delete(:original_url) || '/account'
         redirect url
       else
         flash[:warning] = "Incorrect email address or password."
@@ -121,7 +121,7 @@ module Stormy
       authorize!
       current_account.password = params['password']
       current_account.save!
-      redirect '/projects'
+      redirect '/account'
     end
 
     get '/account' do
@@ -186,7 +186,7 @@ module Stormy
           current_account.update({ params['id'] => params['value'] })
         end
         ok
-      rescue Account::EmailTakenError => e
+      rescue Account::DuplicateFieldError => e
         fail('taken')
       rescue Account::InvalidDataError => e
         fail('invalid')

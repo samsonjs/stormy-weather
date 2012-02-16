@@ -10,21 +10,13 @@ module Stormy
         Account.count
       end
 
-      def num_admins
-        Models::Admin.count
-      end
-
-      def num_projects
-        Project.count
-      end
-
       # Used to redirect back to the most recent list of things.
       #
-      # i.e. someone goes to /admin -> /admin/account/foo -> /admin/project/007
-      #      if they delete that project they should go back to /admin/account/foo
+      # i.e. someone goes to /admin -> /admin/account/foo -> /admin/thing/007
+      #      if they delete that thing they should go back to /admin/account/foo
       #
-      #      however if they go /admin -> /admin/projects -> /admin/project/007
-      #      and then delete that project they should go back to /admin/projects
+      #      however if they go /admin -> /admin/things -> /admin/thing/007
+      #      and then delete that thing they should go back to /admin/things
       def last_listing
         session.delete(:last_listing) || '/admin'
       end

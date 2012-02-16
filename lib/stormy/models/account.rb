@@ -7,27 +7,26 @@ module Stormy
   module Models
     class Account < Base
 
-      class EmailTakenError < RuntimeError; end
       class IncorrectPasswordError < RuntimeError; end
 
-      name 'account'
+      Roles = %w[user admin]
+
+      model_name 'account'
 
       field :id, :required => true
 
-      field :email, :type => :email, :required  => true
+      field :email, :type => :email, :required  => true, :unique => true
       field :first_name, :required => true, :updatable => true
       field :last_name, :required => true, :updatable => true
       field :phone, :type => :phone, :updatable => true
 
-      field :hashed_password, :required => true
-      field :password
-
       field :created_timestamp, :type => :integer
       field :email_verification_token, :nullify_if_blank => true
       field :email_verified?
+      field :hashed_password, :required => true
+      field :password
       field :password_reset_token, :nullify_if_blank => true
-
-      @@account_email_index_key = Stormy.key('index:account-email')
+      field :role, :required => true
 
 
       ### Class Methods
@@ -41,18 +40,8 @@ module Stormy
         end
       end
 
-      def self.email_taken?(email)
-        !! redis.hget(@@account_email_index_key, email.to_s.strip.downcase)
-      end
-
-      def self.fetch_by_email(email)
-        if id = id_from_email(email)
-          fetch(id)
-        end
-      end
-
       def self.reset_password(email)
-        if key = key_from_email(email)
+        if key = key(id_from_email(email))
           token = redis.hget(key, 'password_reset_token')
           if token.blank?
             token = UUID.generate
@@ -75,12 +64,8 @@ module Stormy
         end
       end
 
-      def self.id_from_email(email)
-        redis.hget(@@account_email_index_key, email.strip.downcase)
-      end
-
       def self.verify_email(email, token)
-        if key = key_from_email(email)
+        if key = key(id_from_email(email))
           expected_token = redis.hget(key, 'email_verification_token')
           verified = token == expected_token
           if verified
@@ -92,19 +77,10 @@ module Stormy
       end
 
       def self.email_verified?(email)
-        if key = key_from_email(email)
+        if key = key(id_from_email(email))
           redis.hget(key, 'email_verified') == 'true'
         end
       end
-
-
-      ### Private Class Methods
-
-      def self.key_from_email(email)
-        key(id_from_email(email))
-      end
-
-      private_class_method :key_from_email
 
 
       ### Instance Methods
@@ -120,36 +96,20 @@ module Stormy
       end
 
       def create
-        raise EmailTakenError if email_taken?
-
-        # new accounts get an id and timestamp
-        self.id = UUID.generate unless id.present?
-        self.created_timestamp = Time.now.to_i
-
+        self.role = 'user' if role.blank?
         super
-
-        create_email_verification_token
-
-        # add to index
-        redis.hset(@@account_email_index_key, email.downcase, id)
-
-        self
       end
 
-      def delete!
-        project_ids.each { |id| Project.delete!(id) }
-        super
-        redis.hdel(@@account_email_index_key, email.strip.downcase)
+      def has_role?(role)
+        Roles.index(self.role) >= Roles.index(role)
       end
 
-      def email_taken?(email = @email)
-        self.class.email_taken?(email)
-      end
-
-      def create_email_verification_token
-        self.email_verification_token ||= UUID.generate
-        redis.hset(key, 'email_verification_token', email_verification_token)
-        email_verification_token
+      def email_verification_token
+        unless @email_verification_token
+          @email_verification_token = UUID.generate
+          redis.hset(key, 'email_verification_token', @email_verification_token)
+        end
+        @email_verification_token
       end
 
       def password
@@ -167,41 +127,16 @@ module Stormy
         "#{first_name} #{last_name}"
       end
 
-      def count_projects
-        redis.scard(project_ids_key)
-      end
-
-      def project_ids
-        redis.smembers(project_ids_key)
-      end
-
-      def projects
-        project_ids.map { |pid| Project.fetch(pid) }
-      end
-
-      def sorted_projects
-        @sorted_projects ||= projects.sort { |a,b| a.created_timestamp <=> b.created_timestamp }
-      end
-
-      def add_project_id(id)
-        redis.sadd(project_ids_key, id)
-      end
-
-      def remove_project_id(id)
-        redis.srem(project_ids_key, id)
-      end
-
       def update_email(new_email)
         new_email = new_email.strip
         if email != new_email
-          raise EmailTakenError if new_email.downcase != email.downcase && email_taken?(new_email)
-          raise InvalidDataError.new({ 'email' => 'invalid' }) unless field_valid?('email', new_email)
-          if email.downcase != new_email.downcase
-            self.email_verified = false
-            redis.hdel(@@account_email_index_key, email.downcase)
-            redis.hset(@@account_email_index_key, new_email.downcase, id)
-          end
+          changed = new_email.downcase != email.downcase
+          raise DuplicateFieldError.new(:email => new_email) if changed && email_taken?(new_email)
+          raise InvalidDataError.new('email' => 'invalid') unless field_valid?('email', new_email)
+          self.email_verified = false if changed
+          remove_from_field_index(:email) if changed
           self.email = new_email
+          add_to_field_index(:email) if changed
           save!
         end
       end
@@ -212,13 +147,6 @@ module Stormy
         raise InvalidDataError.new({ 'password' => 'missing' }) if new_password.blank?
         redis.hset(key, 'hashed_password', BCrypt::Password.create(new_password))
         self.password = new_password
-      end
-
-
-      private
-
-      def project_ids_key
-        @project_ids_key ||= "#{key}:project-ids"
       end
 
     end

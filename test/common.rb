@@ -237,49 +237,6 @@ module Stormy
 
       end # Accounts
 
-
-      module Admins
-
-        include Stormy::Models
-
-        def setup_admins
-          @admin_data ||= fixtures('admins')['sami']
-          @admin = Admin.create(@admin_data)
-        end
-
-        def teardown_admins
-          @admin.delete!
-        end
-
-      end # Admins
-
-      module Projects
-
-        include Stormy::Models
-
-        def projects
-          @projects ||= fixtures('projects')
-        end
-
-        def setup_projects(options = {})
-          account = options[:owner] || @existing_account
-          @existing_project_data = projects['stormy']
-          if account
-            @existing_project_data['account_id'] = account.id
-          end
-          @existing_project = Project.create(@existing_project_data)
-
-          @new_project_data = projects['dating-free']
-        end
-
-        def teardown_projects
-          Project.list_ids.each do |id|
-            Project.delete!(id)
-          end
-        end
-
-      end # Projects
-
     end # Helpers
 
   end

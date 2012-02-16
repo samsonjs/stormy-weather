@@ -3,21 +3,17 @@
 A web server blueprint using Sinatra and Redis.
 
 Storm Weather is only a vague idea. Trying to nail down a lightweight blueprint for
-projects that have user accounts and admin accounts.
+projects that have user accounts.
 
 
 ## Models
 
 ### Account Model
 
-### Admin Model
-
 
 ## Controllers
 
 ### Account Controller
-
-### Admin Controller
 
 ### Public Controller
 

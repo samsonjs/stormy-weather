@@ -64,6 +64,15 @@ module Stormy
         end
       end
 
+      def breadcrumbs
+        @breadcrumbs ||= []
+      end
+
+      def breadcrumb(crumb)
+        crumb[:path] ||= '/' + crumb[:name].downcase
+        breadcrumbs << crumb
+      end
+
       def format_dollars(amount, currency = 'CAD')
         '%s $%.2f' % [currency, amount / 100.0]
       end
@@ -114,6 +123,10 @@ module Stormy
 
       def markdown(s)
         RDiscount.new(s.to_s).to_html
+      end
+
+      def admin_page?(path = request.path_info)
+        path.starts_with?('/admin')
       end
 
     end

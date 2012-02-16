@@ -7,7 +7,6 @@ require 'common'
 class AccountsControllerTest < Stormy::Test::ControllerCase
 
   include Stormy::Test::Helpers::Accounts
-  include Stormy::Test::Helpers::Projects
 
   def setup
     setup_accounts
@@ -32,7 +31,7 @@ class AccountsControllerTest < Stormy::Test::ControllerCase
 
   def test_sign_up_with_valid_data
     post '/sign-up', @account_data
-    assert_redirected '/projects'
+    assert_redirected '/account'
     assert_equal 1, Pony.sent_mail.length
     assert mail = Pony.sent_mail.shift
   end
@@ -80,17 +79,17 @@ class AccountsControllerTest < Stormy::Test::ControllerCase
 
   def test_sign_in_submit
     sign_in
-    assert_redirected '/projects'
+    assert_redirected '/account'
   end
 
   def test_sign_in_remember
     sign_in(@existing_account_data, 'remember' => 'on')
-    assert_redirected '/projects'
+    assert_redirected '/account'
 
     post '/sign-out'
     assert_redirected '/'
 
-    get '/projects'
+    get '/account'
     assert_ok
 
     # deletes remembered cookie
@@ -154,7 +153,7 @@ class AccountsControllerTest < Stormy::Test::ControllerCase
 
     new_password = 'new password'
     post '/account/reset-password', { 'password' => new_password }
-    assert_redirected '/projects'
+    assert_redirected '/account'
     assert_equal @existing_account.id, Account.check_password(@existing_account.email, new_password)
     assert Account.fetch(@existing_account.id).password == new_password
 
@@ -256,7 +255,7 @@ class AccountsControllerTest < Stormy::Test::ControllerCase
   def test_verify_email
     get "/account/verify/#{@existing_account.email}/#{@existing_account.email_verification_token}"
     assert_redirected '/account'
-    assert_nil Account.fetch(@existing_account.id).email_verification_token
+    assert redis.hget(@existing_account.id, 'email_verification_token').blank?
   end
 
   def test_verify_email_with_invalid_token_signed_in

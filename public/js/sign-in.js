@@ -1,7 +1,5 @@
 $(function() {
 
-  $('input[name="email"]').focus()
-
   $('#forgot-password-link').click(function() {
     window.location.href = '/forgot-password/' + $('#email').val()
     return false

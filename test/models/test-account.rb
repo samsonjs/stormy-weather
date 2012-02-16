@@ -7,11 +7,9 @@ require 'common'
 class AccountTest < Stormy::Test::Case
 
   include Stormy::Test::Helpers::Accounts
-  include Stormy::Test::Helpers::Projects
 
   def setup
     setup_accounts
-    setup_projects
 
     @invalid_addresses = [
       'invalid email address',
@@ -22,7 +20,6 @@ class AccountTest < Stormy::Test::Case
   end
 
   def teardown
-    teardown_projects
     teardown_accounts
   end
 
@@ -75,7 +72,7 @@ class AccountTest < Stormy::Test::Case
     assert Account.verify_email(@existing_account.email, @existing_account.email_verification_token)
     account = Account.fetch(@existing_account.id)
     assert account.email_verified
-    assert !account.email_verification_token
+    assert !account.instance_variable_get('@email_verification_token')
     assert !Account.verify_email('non@existent.email', 'insignificant token')
   end
 
@@ -90,15 +87,12 @@ class AccountTest < Stormy::Test::Case
 
     # no new token is generated if one is present
     token = @existing_account.email_verification_token
-    @existing_account.create_email_verification_token
     assert_equal @existing_account.email_verification_token, token
 
     # a token is generated if necessary
     Account.verify_email(@existing_account.email, @existing_account.email_verification_token) # clears token
     account = Account.fetch(@existing_account.id)
-    assert !account.email_verification_token
-    account.create_email_verification_token
-    assert account.email_verification_token
+    assert !account.instance_variable_get('@email_verification_token')
     assert account.email_verification_token != token
   end
 
@@ -132,7 +126,7 @@ class AccountTest < Stormy::Test::Case
   end
 
   def test_create_with_existing_email
-    assert_raises Account::EmailTakenError do
+    assert_raises Account::DuplicateFieldError do
       Account.new(@existing_account_data).create
     end
   end
@@ -195,44 +189,12 @@ class AccountTest < Stormy::Test::Case
     assert Account.fetch_by_email(@existing_account.email).nil?, 'Account was fetched by email after deletion'
 
     # indexes
-    assert !@existing_account.email_taken?, 'Account email is taken after deletion'
+    assert !@existing_account.email_taken?(@existing_account.email), 'Account email is taken after deletion'
     assert !Account.exists?(@existing_account.id), 'Account exists after deletion'
-
-    # projects are deleted
-    assert_equal [], @existing_account.project_ids
   end
 
   def test_name
     assert_equal "#{@existing_account.first_name} #{@existing_account.last_name}", @existing_account.name
-  end
-
-  def test_count_projects
-    assert_equal 1, @existing_account.count_projects
-  end
-
-  def test_project_ids
-    assert_equal [@existing_project.id], @existing_account.project_ids
-  end
-
-  def test_projects
-    assert_equal [@existing_project.id], @existing_account.projects.map { |p| p.id }
-  end
-
-  def test_sorted_projects
-    # make sure created timestamp is in the future ... this stinks
-    sleep 1
-    project = Project.create(@new_project_data.merge(:account_id => @existing_account.id))
-    assert_equal [@existing_project.id, project.id], @existing_account.sorted_projects.map { |p| p.id }
-  end
-
-  def test_add_project_id
-    @existing_account.add_project_id('fake-project-id')
-    assert_equal 2, @existing_account.count_projects
-  end
-
-  def test_remove_project_id
-    @existing_account.remove_project_id(@existing_project.id)
-    assert_equal 0, @existing_account.count_projects
   end
 
   def test_update
@@ -377,7 +339,7 @@ class AccountTest < Stormy::Test::Case
     # all should be updated
     check_account_fields(@existing_account, updated_data)
 
-    # restore fields required for project clean up
+    # restore fields required for clean up
     @existing_account.update!(original_data)
   end
 

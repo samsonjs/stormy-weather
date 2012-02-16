@@ -1,65 +1,82 @@
-<h2 class="section-heading top">Account</h2>
-
 <%== flash_message %>
 
-<table id="account">
-  <tr>
-    <th>First name</th>
-    <td><span id="first_name" class="editable"><%= @account.first_name %></span></td>
-    <td rowspan="4" class="edit-instructions">
-      &larr; click to edit
-    </td>
-  </tr>
-  <tr>
-    <th>Last name</th>
-    <td><span id="last_name" class="editable"><%= @account.last_name %></span></td>
-  </tr>
-  <tr>
-    <th>Email</th>
-    <td>
-      <span id="email" class="editable-json"><%= @account.email %></span>
-      <span id="email-verified" class="verified <%= @account.email_verified? ? '' : 'hidden' %>">&#10003; Verified</span>
-    </td>
-  </tr>
-  <tr>
-    <th>Phone</th>
-    <td>
-      <span id="phone" class="editable"><%= @account.phone %></span>
-    </td>
-  </tr>
-</table>
+<div class="container">
+  <div class="content">
 
-<p class="indented"><a href="#" id="change-password-link">Change my password</a></p>
+    <div class="row">
+      <div class="fields span6">
+        <h2>Your Account</h2>
 
-<form action="/account/password" method="post" id="change-password-form">
-<table id="change-password">
-  <tr>
-    <th><label for="old-password">Current password</label></th>
-    <td><input type="password" id="old-password" name="old-password" placeholder="Current password"></td>
-  </tr>
-  <tr>
-    <th><label for="new-password">New password</label></th>
-    <td><input type="password" id="new-password" name="new-password" placeholder="Secret"></td>
-  </tr>
-  <tr>
-    <th><label for="password-confirmation">Confirm</label></th>
-    <td><input type="password" id="password-confirmation" name="password-confirmation" placeholder="Again"></td>
-  </tr>
-  <tr>
-    <th></th>
-    <td align="right">
-      <input type="submit" id="change-password-button" value="Change My Password">
-      <img class="spinner" src="/images/spinner.gif">
-    </td>
-  </tr>
-</table>
-</form>
+        <div class="clearfix">
+          <p>
+            <strong>First name</strong>
+            <br>
+            <span id="first_name" class="editable"><%= @account.first_name %></span>
+          </p>
+        </div>
 
-<p id="password-changed" class="indented">Password changed!</p>
+        <div class="clearfix">
+          <p>
+            <strong>Last name</strong>
+            <br>
+            <span id="last_name" class="editable"><%= @account.last_name %></span>
+          </p>
+        </div>
 
-<div id="email-verification" class="indented <%= @account.email_verified? ? 'hidden' : '' %>">
-  <hr>
-  <p id="unverified-email" class="unverified">Your email address is unverified.</p>
-  <p><a href="#" id="send-email-verification">Send verification email</a></p>
-  <p id="sending-email-verification"><img src="/images/spinner.gif"> Sending...</p>
+        <div class="clearfix">
+          <p>
+            <strong>Phone</strong>
+            <br>
+            <span id="phone" class="editable"><%= @account.phone %></span>
+          </p>
+        </div>
+
+        <div class="clearfix">
+          <span id="email-verified" class="verified <%= @account.email_verified? ? '' : 'hidden' %>">&#10003; Verified</span>
+          <p>
+            <strong>Email</strong>
+            <br>
+            <span id="email" class="editable-json"><%= @account.email %></span>
+          </p>
+        </div>
+
+        <div id="email-verification" class="clearfix <%= @account.email_verified? ? 'hidden' : '' %>">
+          <p id="unverified-email" class="unverified">Your email address is unverified.</p>
+          <p><button id="send-email-verification" class="btn">Send verification email</button></p>
+          <p id="sending-email-verification" class="hidden"><img src="/images/spinner.gif"> Sending...</p>
+        </div>
+
+      </div> <!-- fields -->
+
+      <div class="fields span6">
+        <hr class="separator">
+
+        <h2>Password</h2>
+
+        <form action="/account/password" method="post" id="change-password-form">
+          <fieldset>
+            <div class="clearfix">
+              <label for="old-password">Current password</label>
+              <input type="password" id="old-password" name="old-password" placeholder="Current password">
+            </div>
+            <div class="clearfix">
+              <label for="new-password">New password</label>
+              <input type="password" id="new-password" name="new-password" placeholder="Secret">
+            </div>
+            <div class="clearfix">
+              <label for="password-confirmation">Confirm</label>
+              <input type="password" id="password-confirmation" name="password-confirmation" placeholder="Again">
+            </div>
+            <div class="clearfix">
+              <input type="submit" id="change-password-button" class="btn" value="Change my password">
+              <span id="change-password-spinner" class="hidden"><img class="spinner" src="/images/spinner.gif"> Changing...</span>
+            </div>
+            <p id="password-changed" class="notice hidden">Password changed!</p>
+          </fieldset>
+        </form>
+
+      </div> <!-- fields -->
+    </div> <!-- row -->
+
+  </div>
 </div>

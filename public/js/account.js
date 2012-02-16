@@ -1,9 +1,9 @@
 $(function() {
 
   $('#change-password-link').click(function() {
-    $(this).hide()
-    $('#change-password').show()
-    $('#password-changed').hide()
+    $(this).addClass('hidden')
+    $('#change-password').removeClass('hidden')
+    $('#password-changed').addClass('hidden')
     $('#old-password').focus()
     return false
   })
@@ -14,8 +14,8 @@ $(function() {
   })
 
   $('#send-email-verification').click(function() {
-    $('#sending-email-verification').show()
-    $(this).hide()
+    $('#sending-email-verification').removeClass('hidden')
+    $(this).addClass('hidden')
     var self = this
     $.post('/account/send-email-verification', function(data) {
       if (data.status === 'ok') {
@@ -29,8 +29,8 @@ $(function() {
     }).error(function() {
       alert('Failed to send verification email. Try again later.')
     }).complete(function() {
-      $('#sending-email-verification').hide()
-      $(self).show()
+      $('#sending-email-verification').addClass('hidden')
+      $(self).removeClass('hidden')
     })
     return false
   })
@@ -43,14 +43,14 @@ function changePassword() {
     , confirmation = $('#password-confirmation').val()
   if ($.trim(oldPassword) && $.trim(newPassword) && newPassword === confirmation) {
     $('#change-password-form input[type="password"]').removeClass('error')
-    $('#change-password-form input[type="submit"]').hide()
-    $('#change-password-form .spinner').show()
+    $('#change-password-form input[type="submit"]').addClass('hidden')
+    $('#change-password-spinner').removeClass('hidden')
     $.post('/account/password', $('#change-password-form').serialize(), function(data) {
       if (data.status === 'ok') {
         $('input[type="password"]').val('')
-        $('#change-password').hide()
-        $('#change-password-link').show()
-        $('#password-changed').show()
+        $('#change-password').addClass('hidden')
+        $('#change-password-link').removeClass('hidden')
+        $('#password-changed').removeClass('hidden')
       }
       // incorrect old password
       else if (data.reason === 'incorrect') {
@@ -72,8 +72,8 @@ function changePassword() {
     }).error(function(x) {
       alert('Failed to change password. Try again later.')
     }).complete(function() {
-      $('#change-password-form input[type="submit"]').show()
-      $('#change-password-form .spinner').hide()
+      $('#change-password-form input[type="submit"]').removeClass('hidden')
+      $('#change-password-spinner').addClass('hidden')
     })
   }
   else {

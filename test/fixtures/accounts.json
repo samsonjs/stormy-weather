@@ -4,6 +4,7 @@
   , "email"               : "sami@example.com"
   , "phone"               : "250-216-6216"
   , "password"            : "super secret"
+  , "role"                : "admin"
   }
 
 , "freddy": {
@@ -12,5 +13,6 @@
   , "email"               : "freddy@example.com"
   , "phone"               : "(250) 555-9999"
   , "password"            : "even more secreter"
+  , "role"                : "user"
   }
 }

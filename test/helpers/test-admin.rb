@@ -16,14 +16,6 @@ class AdminHelperTest < Stormy::Test::HelperCase
     assert_equal 0, num_accounts
   end
 
-  def test_num_admins
-    assert_equal 0, num_admins
-  end
-
-  def test_num_projects
-    assert_equal 0, num_projects
-  end
-
   def test_last_listing
     assert_equal '/admin', last_listing
     mark_last_listing '/admin/accounts'

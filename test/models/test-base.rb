@@ -9,8 +9,10 @@ class ModelBaseTest < Stormy::Test::Case
   def setup
     @my_model_class = Class.new(Stormy::Models::Base)
     @my_model_class.class_eval do
+      model_name 'my_model'
       field :id, :required => true
-      field :name, :updatable => true, :required => true
+      field :name, :updatable => true, :required => true, :indexed => true
+      field :email, :required => true, :unique => true
       field :age, {
         :type      => :integer,
         :required  => true,
@@ -18,14 +20,8 @@ class ModelBaseTest < Stormy::Test::Case
         :validator => proc { |n| n >= 18 }
       }
       field :verified, :type => :boolean
-
-      def create
-        self.id = UUID.generate unless id.present?
-        super
-      end
-
     end
-    @fields = { 'name' => 'Sami', 'age' => '29' }
+    @fields = { 'name' => 'Sami', 'age' => '29', 'email' => 'sami@samhuri.net' }
     @my_model = @my_model_class.create(@fields)
   end
 
@@ -39,15 +35,16 @@ class ModelBaseTest < Stormy::Test::Case
   ### Class Methods
 
   def test_name
-    @my_model_class.name 'my_model'
-    assert_equal 'my_model', @my_model_class.name
+    @my_model_class.model_name 'my_model'
+    assert_equal 'my_model', @my_model_class.model_name
   end
 
   def test_id_field
-    # has id by default
+    # has id
     id_field = {
       :type => :string,
-      :required => true
+      :required => true,
+      :accessors => true
     }
     assert_equal(id_field, @my_model_class.fields[:id])
     methods = %w[id id=]
@@ -60,7 +57,9 @@ class ModelBaseTest < Stormy::Test::Case
     name_field = {
       :type => :string,
       :required => true,
-      :updatable => true
+      :updatable => true,
+      :accessors => true,
+      :indexed => true
     }
     assert_equal(name_field, @my_model_class.fields[:name])
     methods = %w[name name=]
@@ -85,7 +84,7 @@ class ModelBaseTest < Stormy::Test::Case
   end
 
   def test_verified_field
-    verified_field = { :type => :boolean }
+    verified_field = { :type => :boolean, :accessors => true }
     assert_equal(verified_field, @my_model_class.fields[:verified])
     methods = %w[verified verified= verified?]
     methods.each do |name|
@@ -125,7 +124,7 @@ class ModelBaseTest < Stormy::Test::Case
 
   def test_key
     id = @my_model.id
-    key = Stormy.key(@my_model_class.name, id)
+    key = Stormy.key(@my_model_class.model_name, id)
     assert_equal key, @my_model_class.key(id)
   end
 

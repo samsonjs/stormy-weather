@@ -9,6 +9,10 @@ require 'active_support/core_ext'
 this_dir = File.dirname(__FILE__)
 $LOAD_PATH.unshift(this_dir) unless $LOAD_PATH.include?(this_dir)
 
+# Ruby extensions
+require 'class-ext'
+require 'hash-ext'
+
 module Stormy
 
   # key prefix for data stored in Redis (used for testing)
@@ -16,12 +20,12 @@ module Stormy
     KeyPrefix = ''
   end
 
-  # public directory for project photos
+  # public directory for photos
   unless const_defined? :PhotoDir
     PhotoDir = File.expand_path('../public/photos', File.dirname(__FILE__))
   end
 
-  # public directory for project videos
+  # public directory for videos
   unless const_defined? :VideoDir
     VideoDir = File.expand_path('../public/videos', File.dirname(__FILE__))
   end

@@ -56,6 +56,7 @@ module Stormy
         fields = params.merge({
           'email_verified' => email_changed ? true : @account.email_verified
         })
+        # TODO slice valid field names instead of removing the outliers
         fields.delete('splat')
         fields.delete('captures')
         fields.delete('email')

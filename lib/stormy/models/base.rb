@@ -631,7 +631,7 @@ module Stormy
       end
 
       def update_indexed_field(name, value)
-        value = value.strip
+        value = value.to_s.strip
         orig = send(name)
         if orig != value
           changed = orig.downcase != value.downcase

@@ -82,7 +82,7 @@ class AccountTest < Stormy::Test::Case
     assert Account.email_verified?(@existing_account.email)
   end
 
-  def test_create_email_verification_token
+  def test_creates_email_verification_token
     assert @existing_account.email_verification_token
 
     # no new token is generated if one is present

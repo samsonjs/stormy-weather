@@ -153,7 +153,6 @@ class AuthorizationHelperTest < Stormy::Test::HelperCase
     authorize_account(@existing_account.id)
     assert admin_authorized?
 
-    @current_account = nil
     authorize_account('does not exist')
     assert !admin_authorized?
   end

@@ -318,8 +318,21 @@ module Stormy
 
         define_method(thing) do
           klass = Stormy::Models.const_get(options[:class_name])
-          if thing_id = send("#{thing}_id")
-            instance_variable_set("@#{thing}", klass.fetch(thing_id))
+          thing_id = send("#{thing}_id")
+          if thing_id.present?
+            instance_variable_get("@#{thing}") || instance_variable_set("@#{thing}", klass.fetch(thing_id))
+          end
+        end
+
+        define_method("#{thing}=") do |value|
+          klass = Stormy::Models.const_get(options[:class_name])
+          if obj = send(thing)
+            obj.send("remove_#{model_name}_id", id)
+          end
+          self.instance_variable_set("@#{thing}", value)
+          self.send("#{thing}_id=", value ? value.id : '')
+          if value
+            value.send("add_#{model_name}_id", id)
           end
         end
       end
@@ -409,7 +422,7 @@ module Stormy
 
         self.class.belongs_to_relationships.each do |thing, options|
           if obj = send(thing)
-            obj.send("add_#{self.class.model_name}_id", id)
+            obj.send("add_#{model_name}_id", id)
           end
         end
 
@@ -424,7 +437,7 @@ module Stormy
         if remove_from_indexes
           self.class.belongs_to_relationships.each do |thing, options|
             if obj = send(thing)
-              obj.send("remove_#{self.class.model_name}_id", id)
+              obj.send("remove_#{model_name}_id", id)
             end
           end
           redis.del(key)

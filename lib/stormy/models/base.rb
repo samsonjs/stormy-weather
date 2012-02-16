@@ -251,6 +251,10 @@ module Stormy
           define_method("#{name}_taken?") do |value|
             self.class.send("#{name}_taken?", value)
           end
+
+          define_method("update_#{name}") do |value|
+            update_indexed_field(name, value)
+          end
         end
       end
 
@@ -583,6 +587,10 @@ module Stormy
         self.class.fields[name.to_sym][:required]
       end
 
+      def field_unique?(name)
+        self.class.fields[name.to_sym][:unique]
+      end
+
       def validate_field(name, value)
         valid = true
         reason = nil
@@ -620,6 +628,25 @@ module Stormy
 
       def field_default(name)
         self.class.fields[name][:default]
+      end
+
+      def update_indexed_field(name, value)
+        value = value.strip
+        orig = send(name)
+        if orig != value
+          changed = orig.downcase != value.downcase
+          if field_unique?(name) && changed && send("#{name}_taken?", value)
+            raise DuplicateFieldError.new(name => value)
+          end
+          result = validate_field(name, value)
+          unless result[:valid]
+            raise InvalidDataError.new(name => result[:reason])
+          end
+          remove_from_field_index(name) if changed
+          self.send("#{name}=", value)
+          add_to_field_index(name) if changed
+          save!
+        end
       end
 
     end

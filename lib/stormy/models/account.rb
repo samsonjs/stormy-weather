@@ -127,18 +127,12 @@ module Stormy
         "#{first_name} #{last_name}"
       end
 
+      alias_method :update_email_original, :update_email
       def update_email(new_email)
-        new_email = new_email.strip
-        if email != new_email
-          changed = new_email.downcase != email.downcase
-          raise DuplicateFieldError.new(:email => new_email) if changed && email_taken?(new_email)
-          raise InvalidDataError.new('email' => 'invalid') unless field_valid?('email', new_email)
-          self.email_verified = false if changed
-          remove_from_field_index(:email) if changed
-          self.email = new_email
-          add_to_field_index(:email) if changed
-          save!
+        if new_email.strip.downcase != email.downcase
+          self.email_verified = false
         end
+        update_email_original(new_email)
       end
 
       def update_password(old_password, new_password)
